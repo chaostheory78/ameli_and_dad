@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Amelia & Dad</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { overflow: hidden; background: #000; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+  </head>
+  <body>
+    <a-scene
+      mindar-image="imageTargetSrc: targets.mind; autoStart: true; uiLoading: yes; uiError: yes; uiScanning: yes;"
+      color-space="sRGB"
+      renderer="colorManagement: true;"
+      vr-mode-ui="enabled: false"
+      device-orientation-permission-ui="enabled: false"
+    >
+      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+      <a-entity mindar-image-target="targetIndex: 0">
+
+        <!-- DAD outer glow -->
+        <a-plane position="0.22 0.18 0.001" width="0.28" height="0.70"
+          material="color: #c8e4ff; opacity: 0.08; transparent: true; side: double; depthWrite: false; blending: additive"
+          animation="property: material.opacity; from: 0.08; to: 0.03; dur: 2200; direction: alternate; loop: true; easing: easeInOutSine">
+        </a-plane>
+        <!-- DAD mid glow -->
+        <a-plane position="0.22 0.18 0.001" width="0.18" height="0.68"
+          material="color: #d8eeff; opacity: 0.22; transparent: true; side: double; depthWrite: false; blending: additive"
+          animation="property: material.opacity; from: 0.22; to: 0.09; dur: 2000; direction: alternate; loop: true; easing: easeInOutSine">
+        </a-plane>
+        <!-- DAD core -->
+        <a-plane position="0.22 0.18 0.001" width="0.09" height="0.66"
+          material="color: #eaf4ff; opacity: 0.55; transparent: true; side: double; depthWrite: false; blending: additive"
+          animation="property: material.opacity; from: 0.55; to: 0.28; dur: 1800; direction: alternate; loop: true; easing: easeInOutSine">
+        </a-plane>
+        <!-- DAD bright centre -->
+        <a-plane position="0.22 0.18 0.001" width="0.03" height="0.64"
+          material="color: #ffffff; opacity: 0.75; transparent: true; side: double; depthWrite: false; blending: additive"
+          animation="property: material.opacity; from: 0.75; to: 0.35; dur: 1600; direction: alternate; loop: true; easing: easeInOutSine">
+        </a-plane>
+        <!-- DAD dust -->
+        <a-sphere position="0.21 0.05 0.002" radius="0.005"
+          material="color: #ffffff; opacity: 0.9; transparent: true; blending: additive"
+          animation__pos="property: position; from: 0.21 0.05 0.002; to: 0.23 0.58 0.002; dur: 3000; loop: true; easing: easeOutQuad"
+          animation__op="property: material.opacity; from: 0.9; to: 0; dur: 3000; loop: true; easing: easeOutQuad">
+        </a-sphere>
+        <a-sphere position="0.24 0.15 0.002" radius="0.004"
+          material="color: #c8e4ff; opacity: 0.8; transparent: true; blending: additive"
+          animation__pos="property: position; from: 0.24 0.15 0.002; to: 0.20 0.65 0.002; dur: 3600; loop: true; easing: easeOutQuad; delay: 600"
+          animation__op="property: material.opacity; from: 0.8; to: 0; dur: 3600; loop: true; easing: easeOutQuad; delay: 600">
+        </a-sphere>
+        <a-sphere position="0.19 0.28 0.002" radius="0.004"
+          material="color: #ffffff; opacity: 0.7; transparent: true; blending: additive"
+          animation__pos="property: position; from: 0.19 0.28 0.002; to: 0.22 0.70 0.002; dur: 2800; loop: true; easing: easeOutQuad; delay: 1200"
+          animation__op="property: material.opacity; from: 0.7; to: 0; dur: 2800; loop: true; easing: easeOutQuad; delay: 1200">
+        </a-sphere>
+
+        <!-- AMELIA outer glow -->
+        <a-plane position="-0.28 0.10 0.001" width="0.20" height="0.55"
+          material="color: #c8e4ff; opacity: 0.07; transparent: true; side: double; depthWrite: false; blending: additive"
+          animation="property: material.opacity; from: 0.07; to: 0.02; dur: 2400; direction: alternate; loop: true; easing: easeInOutSine">
+        </a-plane>
+        <!-- AMELIA mid glow -->
+        <a-plane position="-0.28 0.10 0.001" width="0.13" height="0.53"
+          material="color: #d8eeff; opacity: 0.20; transparent: true; side: double; depthWrite: false; blending: additive"
+          animation="property: material.opacity; from: 0.20; to: 0.08; dur: 2200; direction: alternate; loop: true; easing: easeInOutSine">
+        </a-plane>
+        <!-- AMELIA core -->
+        <a-plane position="-0.28 0.10 0.001" width="0.065" height="0.51"
+          material="color: #eaf4ff; opacity: 0.50; transparent: true; side: double; depthWrite: false; blending: additive"
+          animation="property: material.opacity; from: 0.50; to: 0.24; dur: 2000; direction: alternate; loop: true; easing: easeInOutSine">
+        </a-plane>
+        <!-- AMELIA bright centre -->
+        <a-plane position="-0.28 0.10 0.001" width="0.022" height="0.49"
+          material="color: #ffffff; opacity: 0.70; transparent: true; side: double; depthWrite: false; blending: additive"
+          animation="property: material.opacity; from: 0.70; to: 0.32; dur: 1800; direction: alternate; loop: true; easing: easeInOutSine">
+        </a-plane>
+        <!-- AMELIA dust -->
+        <a-sphere position="-0.28 0.02 0.002" radius="0.004"
+          material="color: #ffffff; opacity: 0.9; transparent: true; blending: additive"
+          animation__pos="property: position; from: -0.28 0.02 0.002; to: -0.26 0.48 0.002; dur: 2600; loop: true; easing: easeOutQuad"
+          animation__op="property: material.opacity; from: 0.9; to: 0; dur: 2600; loop: true; easing: easeOutQuad">
+        </a-sphere>
+        <a-sphere position="-0.30 0.12 0.002" radius="0.003"
+          material="color: #c8e4ff; opacity: 0.8; transparent: true; blending: additive"
+          animation__pos="property: position; from: -0.30 0.12 0.002; to: -0.27 0.52 0.002; dur: 3000; loop: true; easing: easeOutQuad; delay: 700"
+          animation__op="property: material.opacity; from: 0.8; to: 0; dur: 3000; loop: true; easing: easeOutQuad; delay: 700">
+        </a-sphere>
+        <a-sphere position="-0.27 0.22 0.002" radius="0.003"
+          material="color: #ffffff; opacity: 0.7; transparent: true; blending: additive"
+          animation__pos="property: position; from: -0.27 0.22 0.002; to: -0.29 0.54 0.002; dur: 2400; loop: true; easing: easeOutQuad; delay: 1400"
+          animation__op="property: material.opacity; from: 0.7; to: 0; dur: 2400; loop: true; easing: easeOutQuad; delay: 1400">
+        </a-sphere>
+
+      </a-entity>
+    </a-scene>
+  </body>
+</html>
