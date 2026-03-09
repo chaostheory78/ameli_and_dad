@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+  <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate"/>
+  <title>Amelia & Dad</title>
+  <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
+  <style>
+    * { margin: 0; padding: 0; }
+    body { overflow: hidden; }
+    #ui { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999; font-family: monospace; }
+    #status { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.6); border: 1px solid #c8e4ff33; color: #c8e4ff; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; padding: 10px 24px; border-radius: 2px; white-space: nowrap; }
+    #corner-tl, #corner-tr, #corner-bl, #corner-br { position: absolute; width: 24px; height: 24px; border-color: #c8e4ff33; border-style: solid; }
+    #corner-tl { top: 16px; left: 16px; border-width: 1px 0 0 1px; }
+    #corner-tr { top: 16px; right: 16px; border-width: 1px 1px 0 0; }
+    #corner-bl { bottom: 16px; left: 16px; border-width: 0 0 1px 1px; }
+    #corner-br { bottom: 16px; right: 16px; border-width: 0 1px 1px 0; }
+  </style>
+</head>
+<body>
+
+<div id="ui">
+  <div id="corner-tl"></div><div id="corner-tr"></div>
+  <div id="corner-bl"></div><div id="corner-br"></div>
+  <div id="status">Loading...</div>
+</div>
+
+<a-scene
+  mindar-image="imageTargetSrc: ./targets.mind; autoStart: true; uiLoading: no; uiScanning: no; uiError: no; filterMinCF: 0.001; filterBeta: 0.001; missTolerance: 10; warmupTolerance: 5"
+  color-space="sRGB"
+  renderer="colorManagement: true; alpha: true"
+  vr-mode-ui="enabled: false"
+  device-orientation-permission-ui="enabled: false"
+>
+  <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+  <a-entity mindar-image-target="targetIndex: 0">
+    <a-plane
+      width="1" height="1.4"
+      position="0 0 0.001"
+      material="transparent: true; opacity: 1; side: double; alphaTest: 0.01"
+      beam-animation>
+    </a-plane>
+  </a-entity>
+</a-scene>
+
+<script>
+AFRAME.registerComponent('beam-animation', {
+  init: function () {
+    const canvas = document.createElement('canvas');
+    const W = 512, H = 716;
+    canvas.width = W; canvas.height = H;
+    const ctx = canvas.getContext('2d');
+
+    const texture = new THREE.CanvasTexture(canvas);
+    this.el.getObject3D('mesh').material.map = texture;
+    this.el.getObject3D('mesh').material.transparent = true;
+    this.el.getObject3D('mesh').material.needsUpdate = true;
+
+    const statusEl = document.getElementById('status');
+    this.el.sceneEl.addEventListener('loaded', () => { statusEl.textContent = 'Point camera at graves'; });
+
+    const target = document.querySelector('[mindar-image-target]');
+    target.addEventListener('targetFound', () => { statusEl.textContent = '✦ In loving memory ✦'; });
+    target.addEventListener('targetLost',  () => { statusEl.textContent = 'Point camera at graves'; });
+
+    // Beam definitions
+    // DAD: xFrac=0.72, baseYFrac=0.64
+    // AMELIA: xFrac=0.23, baseYFrac=0.60 (narrower)
+    const beams = [
+      {
+        cx: W * 0.72,
+        baseY: H * 0.64,
+        topY: -20,
+        spreadTop: W * 0.13,
+        spreadBot: W * 0.04,
+        rays: [
+          { offTop: -0.55, offBot: -0.48, w: 0.040, a: 0.50 },
+          { offTop: -0.30, offBot: -0.25, w: 0.030, a: 0.68 },
+          { offTop: -0.05, offBot:  0.00, w: 0.048, a: 0.85 },
+          { offTop:  0.14, offBot:  0.20, w: 0.034, a: 0.63 },
+          { offTop:  0.38, offBot:  0.44, w: 0.024, a: 0.44 },
+          { offTop: -0.42, offBot: -0.35, w: 0.016, a: 0.32 },
+          { offTop:  0.28, offBot:  0.31, w: 0.019, a: 0.38 },
+        ],
+        dust: [],
+        phase: 0
+      },
+      {
+        cx: W * 0.23,
+        baseY: H * 0.60,
+        topY: -20,
+        spreadTop: W * 0.10,
+        spreadBot: W * 0.032,
+        rays: [
+          { offTop: -0.55, offBot: -0.48, w: 0.034, a: 0.42 },
+          { offTop: -0.30, offBot: -0.25, w: 0.026, a: 0.62 },
+          { offTop: -0.05, offBot:  0.00, w: 0.041, a: 0.78 },
+          { offTop:  0.14, offBot:  0.20, w: 0.029, a: 0.58 },
+          { offTop:  0.38, offBot:  0.44, w: 0.020, a: 0.38 },
+          { offTop: -0.42, offBot: -0.35, w: 0.014, a: 0.28 },
+          { offTop:  0.28, offBot:  0.31, w: 0.016, a: 0.33 },
+        ],
+        dust: [],
+        phase: 1.4
+      }
+    ];
+
+    // Init dust per beam
+    beams.forEach(b => {
+      for (let i = 0; i < 35; i++) {
+        const ri = Math.floor(Math.random() * b.rays.length);
+        const ray = b.rays[ri];
+        b.dust.push({
+          progress: Math.random(),
+          offTop: ray.offTop,
+          offBot: ray.offBot,
+          jitter: (Math.random() - 0.5) * 18,
+          size: Math.random() * 2.2 + 0.8,
+          speed: Math.random() * 0.0003 + 0.0001,
+          alpha: Math.random() * 0.7 + 0.3,
+          delay: Math.random() * 3000
+        });
+      }
+    });
+
+    this.startTime = null;
+
+    this.tick = function(time) {
+      if (!this.startTime) this.startTime = time;
+      const t = time - this.startTime;
+
+      ctx.clearRect(0, 0, W, H);
+
+      beams.forEach(b => {
+        const pulse = 0.88 + 0.12 * Math.sin(t * 0.0018 + b.phase);
+
+        b.rays.forEach((ray, ri) => {
+          const rayPulse = pulse * (0.92 + 0.08 * Math.sin(t * 0.003 + b.phase + ri));
+
+          const topX = b.cx + ray.offTop * b.spreadTop;
+          const botX = b.cx + ray.offBot * b.spreadBot;
+          const topHW = ray.w * W * 0.85;
+          const botHW = ray.w * W * 0.38;
+
+          // Use offscreen canvas for soft horizontal blend
+          const off = document.createElement('canvas');
+          off.width = W; off.height = H;
+          const oc = off.getContext('2d');
+
+          // Vertical fade
+          const vg = oc.createLinearGradient(0, b.topY, 0, b.baseY);
+          vg.addColorStop(0,    'rgba(210,230,255,' + (ray.a * rayPulse * 0.92) + ')');
+          vg.addColorStop(0.18, 'rgba(220,238,255,' + (ray.a * rayPulse * 0.78) + ')');
+          vg.addColorStop(0.55, 'rgba(235,245,255,' + (ray.a * rayPulse * 0.42) + ')');
+          vg.addColorStop(0.85, 'rgba(245,250,255,' + (ray.a * rayPulse * 0.16) + ')');
+          vg.addColorStop(1,    'rgba(255,255,255,0)');
+          oc.fillStyle = vg;
+          oc.fillRect(0, 0, W, H);
+
+          // Horizontal soft mask
+          const midX = (topX + botX) * 0.5;
+          const hg = oc.createLinearGradient(midX - topHW * 2.2, 0, midX + topHW * 2.2, 0);
+          hg.addColorStop(0,    'rgba(0,0,0,0)');
+          hg.addColorStop(0.15, 'rgba(0,0,0,0.04)');
+          hg.addColorStop(0.32, 'rgba(0,0,0,0.52)');
+          hg.addColorStop(0.5,  'rgba(0,0,0,1)');
+          hg.addColorStop(0.68, 'rgba(0,0,0,0.52)');
+          hg.addColorStop(0.85, 'rgba(0,0,0,0.04)');
+          hg.addColorStop(1,    'rgba(0,0,0,0)');
+          oc.globalCompositeOperation = 'destination-in';
+          oc.fillStyle = hg;
+          oc.fillRect(0, 0, W, H);
+
+          ctx.globalCompositeOperation = 'screen';
+          ctx.drawImage(off, 0, 0);
+          ctx.globalCompositeOperation = 'source-over';
+        });
+
+        // Dust
+        b.dust.forEach(d => {
+          const prog = ((d.progress + Math.max(0, t - d.delay) * d.speed) % 1 + 1) % 1;
+          const topX = b.cx + d.offTop * b.spreadTop;
+          const botX = b.cx + d.offBot * b.spreadBot;
+          const x = topX + (botX - topX) * prog + d.jitter;
+          const y = b.topY + (b.baseY - b.topY) * prog;
+          let alpha = prog < 0.1 ? prog / 0.1 : prog > 0.75 ? 1 - (prog - 0.75) / 0.25 : 1;
+          ctx.globalCompositeOperation = 'screen';
+          ctx.beginPath();
+          ctx.arc(x, y, d.size, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(220,238,255,' + (alpha * d.alpha * 0.9) + ')';
+          ctx.fill();
+          ctx.globalCompositeOperation = 'source-over';
+        });
+      });
+
+      texture.needsUpdate = true;
+    };
+  }
+});
+</script>
+</body>
+</html>
